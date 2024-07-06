@@ -107,6 +107,8 @@ export default function UserLoginScreen() {
       />
       <TextInput
         placeholder="Date (dd/mm/yyyy)"
+
+        //n
         value={billDate}
         onChangeText={setBillDate}
         style={styles.input}
