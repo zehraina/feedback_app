@@ -1,5 +1,5 @@
-import { View, Text, Button, TextInput, StyleSheet, Alert } from 'react-native';
 import React, { useState, useContext } from 'react';
+import { View, Text, Button, TextInput, StyleSheet, Alert } from 'react-native';
 import { FeedbackContext } from '../FeedbackContext';
 
 export default function UserLoginScreen() {
@@ -20,37 +20,54 @@ export default function UserLoginScreen() {
   };
 
   const handleRaiseBill = () => {
-    if (billAmount && billDate) {
-      saveData({ type: 'bill', billAmount, billDate });
-      Alert.alert(`Bill raised for ${billAmount} on ${billDate}`);
-      setBillAmount('');
-      setBillDate('');
-    } else {
-      Alert.alert('Please enter both amount and date for the bill.');
+    if (!billAmount || billAmount <= 0) {
+      Alert.alert('Please enter a valid amount for the bill.');
+      return;
     }
+
+    if (!isValidDate(billDate)) {
+      Alert.alert('Please enter a valid bill date in dd/mm/yyyy format.');
+      return;
+    }
+
+    saveData({ type: 'bill', billAmount, billDate });
+    Alert.alert(`Bill raised for ${billAmount} on ${billDate}`);
+    setBillAmount('');
+    setBillDate('');
   };
 
   const saveData = (data) => {
     addFeedback(data);
-    // You can add any additional logic here to save the data, like sending it to a server or local storage.
   };
 
   const handleSubmit = () => {
-    if (gotSalary) {
-      saveData({
-        type: 'salary',
-        question: "Did you get your salary?",
-        answer: "Yes",
-        salaryDate,
-        salaryAmount,
-      });
+    if (!salaryAmount || salaryAmount <= 0) {
+      Alert.alert('Please enter a valid salary amount.');
+      return;
     }
-    // Handle the data as needed
+
+    if (!isValidDate(salaryDate)) {
+      Alert.alert('Please enter a valid salary date in dd/mm/yyyy format.');
+      return;
+    }
+
+    saveData({
+      type: 'salary',
+      question: "Did you get your salary?",
+      answer: "Yes",
+      salaryDate,
+      salaryAmount,
+    });
+
     Alert.alert('Data saved successfully.');
-    // Reset fields
     setGotSalary(null);
     setSalaryDate('');
     setSalaryAmount('');
+  };
+
+  const isValidDate = (dateString) => {
+    const regex = /^([0-2][0-9]|(3)[0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/;
+    return regex.test(dateString);
   };
 
   return (
@@ -64,16 +81,16 @@ export default function UserLoginScreen() {
       {gotSalary && (
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="When (Date)"
-            value={salaryDate}
-            onChangeText={setSalaryDate}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="How much"
+            placeholder="Amount"
             value={salaryAmount}
             onChangeText={setSalaryAmount}
             keyboardType="numeric"
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Date (dd/mm/yyyy)"
+            value={salaryDate}
+            onChangeText={setSalaryDate}
             style={styles.input}
           />
           <Button title="Submit" onPress={handleSubmit} />
@@ -89,7 +106,7 @@ export default function UserLoginScreen() {
         style={styles.input}
       />
       <TextInput
-        placeholder="Date"
+        placeholder="Date (dd/mm/yyyy)"
         value={billDate}
         onChangeText={setBillDate}
         style={styles.input}
@@ -126,8 +143,4 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 });
-
-// screens/UserLoginScreen.js
-// screens/UserLoginScreen.js
-// screens/UserLoginScreen.js
 
